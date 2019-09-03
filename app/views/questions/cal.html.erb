@@ -1,3 +1,9 @@
+<style>
+  #currentDay {
+    background-color: red;
+  }
+</style>
+
 <table id="calendar-container">
   <th id="calendar-header">
     <tr>
@@ -16,63 +22,22 @@
     </tr>
   </th>
   <tbody id="calendar-body">
-    <tr>
-      <td>1</td>
-      <td>2</td>
-      <td>3</td>
-      <td>4</td>
-      <td>5</td>
-      <td>6</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <td>8</td>
-      <td>9</td>
-      <td>10</td>
-      <td>11</td>
-      <td>12</td>
-      <td>13</td>
-      <td>14</td>
-    </tr>
-    <tr>
-      <td>15</td>
-      <td>16</td>
-      <td>17</td>
-      <td>18</td>
-      <td>19</td>
-      <td>20</td>
-      <td>21</td>
-    </tr>
-    <tr>
-      <td>22</td>
-      <td id="current-day">23</td>
-      <td>24</td>
-      <td>25</td>
-      <td>26</td>
-      <td>27</td>
-      <td>28</td>
-    </tr>
-    <tr>
-      <td>29</td>
-      <td>30</td>
-      <td>31</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
   </tbody>
 </table>
 
 <script>
   const calContainer = document.getElementById('calendar-container');
   const calHeader = document.getElementById('calendar-header');
-  const calBody = document.getElementById('calendar-body'); //
-  const currentMonth = document.getElementById('current-month'); //
-  const currentDay = document.getElementById('current-day'); //
-  const currentYear = document.getElementById('current-year'); //
+  const calBody = document.getElementById('calendar-body');
+  const currentMonth = document.getElementById('current-month');
+  let currentDay = undefined;
+  const currentYear = document.getElementById('current-year');
   const clickPrevMonth = document.getElementById('togglePrevMonth');
   const clickNextMonth = document.getElementById('toggleNextMonth');
+  const today = new Date();
+  const todayDay = today.getDate();
+  const todayMonth = today.getMonth();
+  const todayYear = today.getFullYear();
 
   function getCurrentDate() {
     const day = currentDay.innerText;
@@ -82,56 +47,70 @@
     return new Date(date);
   }
 
-  function daysInMonth(date) {
+  function getDaysInMonth(date) {
     const month = date.getMonth();
     const year = date.getFullYear();
     return new Date(year, month, 0).getDate();
   }
 
   function buildCalendar(date) {
-    const days = daysInMonth(date);
+    const daysOfWeek = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+    const days = getDaysInMonth(date);
+    const dayOfWeek = daysOfWeek[date.getDay()];
+
     let calCells = [];
+    for (let i = 0; i < date.getDay(); i ++) {
+      calCells.push('<td></td>');
+    }
     for (let i = 1; i <= days; i ++) {
-      calCells.push(`<td>${i}</td>`);
+      if (date.getMonth() === todayMonth && i === todayDay) {
+        calCells.push(`<td id="currentDay">${i}</td>`);
+      } else {
+        calCells.push(`<td>${i}</td>`);
+      }
     };
     let calRows = [];
-    calCells.forEach((day,index,self) => {
-      let row = self.splice(0, 8);
+    while (calCells.length > 1) {
+      let row = calCells.splice(0, 7);
       row = `<tr>${row}</tr>`;
       calRows.push(row);
-    });
-    return calRows;
+    }
+    return calRows.join('').replace(/,/g, '');
   }
 
-  function setNewCalHeader(date) {
+  function renderCalendar(calData, nextDate) {
+    calBody.innerHTML = calData;
+    currentMonth.innerHTML = nextDate.toLocaleString('default', { month: 'long' });
+    currentYear.innerHTML = nextDate.getFullYear();
   }
 
   function toggleNextMonth() {
     const currDate = getCurrentDate();
-    const nextDate = new Date(currDate.getFullYear(), currDate.getMonth() + 1, currDate.getDay());
-    const calData = buildCalendar(nextDate).join('').replace(/,/g, '');
-    console.log(calData);
-    calBody.innerHTML = calData;
-    currentMonth.innerHTML = nextDate.toLocaleString('default', { month: 'long' });
-    currentYear.innerHTML = nextDate.getFullYear();
+    const nextDate = new Date(currDate.getFullYear(), currDate.getMonth() + 2, 0);
+    const calData = buildCalendar(nextDate);
+    renderCalendar(calData, nextDate);
   }
 
   function togglePreviousMonth() {
     const currDate = getCurrentDate();
-    const nextDate = new Date(currDate.getFullYear(), currDate.getMonth() - 1, currDate.getDay());
-    const calData = buildCalendar(nextDate).join('').replace(/,/g, '');
-    console.log(calData);
-    calBody.innerHTML = calData;
-    currentMonth.innerHTML = nextDate.toLocaleString('default', { month: 'long' });
-    currentYear.innerHTML = nextDate.getFullYear();
+    const nextDate = new Date(currDate.getFullYear(), currDate.getMonth(), 0);
+    const calData = buildCalendar(nextDate);
+    renderCalendar(calData, nextDate);
   }
 
-  clickNextMonth.addEventListener('click', (event) => {
+  clickNextMonth.addEventListener('click', () => {
     toggleNextMonth();
   });
 
-  clickPrevMonth.addEventListener('click', (event) => {
+  clickPrevMonth.addEventListener('click', () => {
     togglePreviousMonth();
+  })
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const newDate = new Date;
+    const calData = buildCalendar(newDate);
+    renderCalendar(calData, newDate);
+    currentDay = document.getElementById('currentDay');
   })
 
 </script>

@@ -1,9 +1,9 @@
 <table id="calendar-container">
   <th id="calendar-header">
     <tr>
-      <td id="current-month">October</td>
-      <td id="previous-month">Left</td>
-      <td id="next-month">Right</td>
+      <td><span id="current-month" data-date="2019-08-30">October</span> <span id="current-year">2019</span></td>
+      <td id="togglePrevMonth">Left</td>
+      <td id="toggleNextMonth">Right</td>
     </tr>
     <tr>
       <td>Sunday</td>
@@ -17,6 +17,49 @@
   </th>
   <tbody id="calendar-body">
     <tr>
+      <td>1</td>
+      <td>2</td>
+      <td>3</td>
+      <td>4</td>
+      <td>5</td>
+      <td>6</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>9</td>
+      <td>10</td>
+      <td>11</td>
+      <td>12</td>
+      <td>13</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <td>15</td>
+      <td>16</td>
+      <td>17</td>
+      <td>18</td>
+      <td>19</td>
+      <td>20</td>
+      <td>21</td>
+    </tr>
+    <tr>
+      <td>22</td>
+      <td id="current-day">23</td>
+      <td>24</td>
+      <td>25</td>
+      <td>26</td>
+      <td>27</td>
+      <td>28</td>
+    </tr>
+    <tr>
+      <td>29</td>
+      <td>30</td>
+      <td>31</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
     </tr>
   </tbody>
 </table>
@@ -24,9 +67,71 @@
 <script>
   const calContainer = document.getElementById('calendar-container');
   const calHeader = document.getElementById('calendar-header');
-  const calBody = document.getElementById('calendar-body');
-  const currMonth = document.getElementById('current-month');
-  const prevMonth = document.getElementById('previous-month');
-  const nextMonth = document.getElementById('next-month');
+  const calBody = document.getElementById('calendar-body'); //
+  const currentMonth = document.getElementById('current-month'); //
+  const currentDay = document.getElementById('current-day'); //
+  const currentYear = document.getElementById('current-year'); //
+  const clickPrevMonth = document.getElementById('togglePrevMonth');
+  const clickNextMonth = document.getElementById('toggleNextMonth');
+
+  function getCurrentDate() {
+    const day = currentDay.innerText;
+    const month = currentMonth.innerText;
+    const year = currentYear.innerText;
+    const date = Date.parse(`${year}-${month}-${day}`);
+    return new Date(date);
+  }
+
+  function daysInMonth(date) {
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    return new Date(year, month, 0).getDate();
+  }
+
+  function buildCalendar(date) {
+    const days = daysInMonth(date);
+    let calCells = [];
+    for (let i = 1; i <= days; i ++) {
+      calCells.push(`<td>${i}</td>`);
+    };
+    let calRows = [];
+    calCells.forEach((day,index,self) => {
+      let row = self.splice(0, 8);
+      row = `<tr>${row}</tr>`;
+      calRows.push(row);
+    });
+    return calRows;
+  }
+
+  function setNewCalHeader(date) {
+  }
+
+  function toggleNextMonth() {
+    const currDate = getCurrentDate();
+    const nextDate = new Date(currDate.getFullYear(), currDate.getMonth() + 1, currDate.getDay());
+    const calData = buildCalendar(nextDate).join('').replace(/,/g, '');
+    console.log(calData);
+    calBody.innerHTML = calData;
+    currentMonth.innerHTML = nextDate.toLocaleString('default', { month: 'long' });
+    currentYear.innerHTML = nextDate.getFullYear();
+  }
+
+  function togglePreviousMonth() {
+    const currDate = getCurrentDate();
+    const nextDate = new Date(currDate.getFullYear(), currDate.getMonth() - 1, currDate.getDay());
+    const calData = buildCalendar(nextDate).join('').replace(/,/g, '');
+    console.log(calData);
+    calBody.innerHTML = calData;
+    currentMonth.innerHTML = nextDate.toLocaleString('default', { month: 'long' });
+    currentYear.innerHTML = nextDate.getFullYear();
+  }
+
+  clickNextMonth.addEventListener('click', (event) => {
+    toggleNextMonth();
+  });
+
+  clickPrevMonth.addEventListener('click', (event) => {
+    togglePreviousMonth();
+  })
 
 </script>

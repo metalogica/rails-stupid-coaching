@@ -48,7 +48,6 @@
   const todayDay = today.getDate();
   const todayMonth = today.getMonth();
   const todayYear = today.getFullYear();
-  const daysOfWeek = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
   // date selectors are the days of the week 0-31 and reset as many times as you toggle the months.
   let dateSelectors = undefined;
 
@@ -65,6 +64,7 @@
     // Find out which day of the week the first day of the month is on.
     const daysInMonth = new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
     const dayOfFirstMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+    const daysOfWeek = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
     const dayOfWeek = daysOfWeek[dayOfFirstMonth.getDay()];
 
     // Build empty <td> for every day until the first day of the week.

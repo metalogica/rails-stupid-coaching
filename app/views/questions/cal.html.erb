@@ -38,9 +38,9 @@
   const calContainer = document.getElementById('calendar-container');
   const calHeader = document.getElementById('calendar-header');
   const calBody = document.getElementById('calendar-body');
-  const currentMonth = document.getElementById('current-month');
   // currentDay is required in multiple functions and reset as many times as you toggle the months.
   let currentDay = undefined;
+  const currentMonth = document.getElementById('current-month');
   const currentYear = document.getElementById('current-year');
   const clickPrevMonth = document.getElementById('togglePrevMonth');
   const clickNextMonth = document.getElementById('toggleNextMonth');
@@ -49,6 +49,8 @@
   const todayMonth = today.getMonth();
   const todayYear = today.getFullYear();
   const daysOfWeek = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+  // date selectors are the days of hte week 0-31 and reset as many times as you toggle the months.
+  let dateSelectors = undefined;
 
   // This function is used inside the toggleMonth(s) functions.
   function getCurrentDate() {
@@ -73,7 +75,7 @@
     // Build <td> for every day of the month (28-31)
     for (let i = 1; i <= daysInMonth; i ++) {
       if (date.getMonth() === todayMonth && i === todayDay) {
-        calCells.push(`<td id="currentDay">${i}</td>`);
+        calCells.push(`<td id="currentDay" class="date">${i}</td>`);
       } else {
         calCells.push(`<td class="date">${i}</td>`);
       }
@@ -89,12 +91,25 @@
     return calRows.join('').replace(/,/g, '');
   }
 
+  // Let each <td> for each day day be interactive: it provides a date object each time you click on it.
+  function setDateInteraction(date) {
+    date.addEventListener('click', (event) => {
+      let day = event.currentTarget.innerText;
+      let month = currentMonth.innerText;
+      let year = currentYear.innerText;
+      let date = new Date(Date.parse(`${year}-${month}-${day}`));
+      // Use this value 'date' in AJAX calls to the rails server.
+      console.log(date);
+    })
+  }
+
   // Render new day, month and year from newly built calendar.
   function renderCalendar(calData, nextDate) {
     calBody.innerHTML = calData;
     currentMonth.innerHTML = nextDate.toLocaleString('default', { month: 'long' });
     currentYear.innerHTML = nextDate.getFullYear();
-    dateSelectors = document.querySelector('.date');
+    dateSelectors = document.querySelectorAll('.date');
+    dateSelectors.forEach( date => setDateInteraction(date));
   }
 
   function toggleNextMonth() {
@@ -125,19 +140,6 @@
     const calData = buildCalendar(newDate);
     renderCalendar(calData, newDate);
     currentDay = document.getElementById('currentDay');
-
-    // Let each <td> for each day day be interactive: it provides a date object each time you click on it.
-    let dateSelectors = document.querySelectorAll('.date');
-    dateSelectors.forEach( date => {
-      date.addEventListener('click', (event) => {
-        let day = event.currentTarget.innerText;
-        let month = currentMonth.innerText;
-        let year = currentYear.innerText;
-        let date = new Date(Date.parse(`${year}-${month}-${day}`));
-        // Use this value 'date' in AJAX calls to the rails server.
-        console.log(date);
-      })
-    })
   })
 
 </script>

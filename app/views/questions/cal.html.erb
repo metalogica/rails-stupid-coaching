@@ -48,6 +48,7 @@
   const todayDay = today.getDate();
   const todayMonth = today.getMonth();
   const todayYear = today.getFullYear();
+  const daysOfWeek = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 
   // This function is used inside the toggleMonth(s) functions.
   function getCurrentDate() {
@@ -58,28 +59,21 @@
     return new Date(date);
   }
 
-  // This function is used inside the buildCalendar function.
-  function getDaysInMonth(date) {
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-    return new Date(year, month, 0).getDate();
-  }
-
   function buildCalendar(date) {
     // Find out which day of the week the first day of the month is on.
-    const daysOfWeek = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-    const days = getDaysInMonth(date);
-    const dayOfWeek = daysOfWeek[date.getDay()];
+    const daysInMonth = new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
+    const dayOfFirstMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+    const dayOfWeek = daysOfWeek[dayOfFirstMonth.getDay()];
 
     // Build empty <td> for every day until the first day of the week.
     let calCells = [];
-    for (let i = 0; i < date.getDay(); i ++) {
+    for (let i = 0; i < daysOfWeek.indexOf(dayOfWeek); i ++) {
       calCells.push('<td class="date"></td>');
     }
     // Build <td> for every day of the month (28-31)
-    for (let i = 1; i <= days; i ++) {
+    for (let i = 1; i <= daysInMonth; i ++) {
       if (date.getMonth() === todayMonth && i === todayDay) {
-        calCells.push(`<td id="currentDay" class="date">${i}</td>`);
+        calCells.push(`<td id="currentDay">${i}</td>`);
       } else {
         calCells.push(`<td class="date">${i}</td>`);
       }
